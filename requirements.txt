@@ -4,3 +4,4 @@ pandas
 simplejson==3.18.1
 autogen==0.1.0
 altair==4
+autogen
