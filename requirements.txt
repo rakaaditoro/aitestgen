@@ -1,6 +1,5 @@
 streamlit
 pandas
 simplejson==3.18.1
-autogen-agentchat~=0.2
-litellm
-flaml[automl]
+pyautogen==0.2.35
+openai
