@@ -137,36 +137,20 @@ user_instruction = st.text_area(
 # OLLAMA CONFIG
 # ==========================================
 
-config_list = [
-{
-    "model": "gpt-4o-mini",
-    "api_key": st.secrets["GEMINI_API_KEY"]
-}
-]
-
-qa_agent = AssistantAgent(
-    name="QA_Agent",
-    max_consecutive_auto_reply=1,
-    human_input_mode="NEVER",
-    llm_config={
-        "timeout": 600,
-        "cache_seed": 42,
-        "config_list": config_list
-    }
-)
-
-user_proxy = UserProxyAgent(
-    name="User",
-    human_input_mode="NEVER",
-    max_consecutive_auto_reply=1,
-    code_execution_config=False
+genai.configure(
+    api_key=st.secrets["GEMINI_API_KEY"]
 )
 
 # ==========================================
 # GENERATE GHERKIN
 # ==========================================
 
-def generate_gherkin(requirement, strategy, output_mode, additional_instruction):
+def generate_gherkin(
+    requirement,
+    strategy,
+    output_mode,
+    additional_instruction
+):
 
     prompt = f"""
 Requirement:
@@ -185,33 +169,11 @@ Generate output according to the selected Output Mode.
 Return only the requested output.
 """
 
-    response = user_proxy.initiate_chat(
-        qa_agent,
-        message=prompt
-    )
+    model = genai.GenerativeModel("gemini-2.5-flash")
 
-    chat_history = response.chat_history
+    response = model.generate_content(prompt)
 
-    # Cari pesan dari QA_Agent
-    for message in reversed(chat_history):
-
-        if (
-            message.get("name") == "QA_Agent"
-            and message.get("content")
-        ):
-
-            result = message["content"]
-
-            # Bersihin TERMINATE
-            result = result.replace("TERMINATE", "")
-
-            # Bersihin markdown gherkin
-            result = result.replace("```gherkin", "")
-            result = result.replace("```", "")
-
-            return result.strip()
-
-    return "Tidak ada output dari AI."
+    return response.text
 
 # ==========================================
 # GENERATE BUTTON
