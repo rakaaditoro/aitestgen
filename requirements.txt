@@ -3,5 +3,6 @@ pandas
 simplejson==3.18.1
 autogen-agentchat~=0.2
 altair==4
-litellm[ollama]
+litellm[ollama]>=1.40.0
+ollama
 flaml[automl]
