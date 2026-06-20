@@ -28,6 +28,15 @@ st.write("Enter a user story, and the AI will generate detailed test cases for y
 # User Input
 user_story = st.text_area("📜 Enter User Story:", "As a user, I want to log in so that I can access my account.")
 
+user_instruction = st.text_area(
+    "🤖 AI Instruction (Optional)",
+    value="""
+Generate Gherkin scenarios.
+Focus on happy path and negative scenarios.
+Use Scenario Outline when applicable.
+"""
+)
+
 config_list = [
     {
         "model": "llama3.2",
@@ -59,41 +68,57 @@ user_proxy = UserProxyAgent(
 # Function to Generate Test Cases
 def generate_test_cases(story):
     prompt = f"""
-    Generate **detailed** test cases for the following user story:
+    You are a Senior QA Engineer specialized in:
+
+    - Manual Testing
+    - Automation Testing
+    - BDD
+    - Test Design Techniques
+    - Risk Based Testing
+
+    Your task is to analyze requirements and generate test scenarios.
+
+    Requirement:
     {story}
 
-    Include:
-    - Functional test cases
-    - Regression test cases
-    - Integration test cases
-    - Performance test cases
-    - Security test cases
-    - Positive test cases
-    - Edge test cases
-    - Negative test cases
+    Additional Instructions:
+    {user_instruction}
 
-    Each test case should include all the following fields in a JSON format: 
-    - ID: Unique test case ID
-    - Summary: A brief description of the test objective.
-    - Test Type: Functional, Regression, Integration, Performance, Security, etc.
-    - Priority: High, Medium, or Low based on impact.
-    - Component: The feature or module under test.
-    - Step Description: Actions to be performed.
-    - Expected Result: The expected system behavior after executing the step.
-    - Actual Result: (To be recorded during test execution).
-    - Pass/Fail Status: (To be marked after execution).
-    
-    **Return the test case Output Requirements:**
-    - Return only a **valid JSON object**.
-    - Do **not** include markdown (` ```json `), explanations, or extra text.
-    - Do **not** include extra characters, escape sequences, explanations, or markdown.
-    - The response **must be valid JSON** without escape sequences (`\`).
+    General Rules:
+    - Identify business rules.
+    - Identify validations.
+    - Identify positive scenarios.
+    - Identify negative scenarios.
+    - Identify boundary scenarios.
+    - Identify edge cases.
+    - Avoid duplicate scenarios.
+    - Use professional QA terminology.
 
-    Example format:
+    Output Format:
+    Generate output in JSON.
+
+    Example:
+
     [
-        {{"ID": "TC001", "Summary": "Verify login with valid credentials", "Test Type": "Functional", "Priority": "High", "Component": "Login", "Step Description": "Enter valid username and password, then click login", "Expected Result": "User should be logged in", "Actual Result": "", "Pass/Fail Status": ""}}
+        {{
+            "Scenario ID": "SC001",
+            "Scenario Name": "Successful Login",
+            "Scenario Type": "Positive",
+            "Priority": "High",
+            "Precondition": "User is on login page",
+            "Test Steps": [
+                "Enter valid username",
+                "Enter valid password",
+                "Click Login"
+            ],
+            "Expected Result": "User is redirected to dashboard"
+        }}
     ]
+
+    Return only valid JSON.
     """
+
+
     
 
     # Initiating chat with the QA agent
@@ -101,6 +126,44 @@ def generate_test_cases(story):
 
     # Extract JSON from AI response
     return extract_json_from_response(response)
+
+preset = st.selectbox(
+    "🎯 Test Strategy",
+    [
+        "Full Coverage",
+        "Happy Path Only",
+        "Negative Testing",
+        "Boundary Testing",
+        "Security Testing",
+        "Regression Suite",
+        "BDD Gherkin"
+    ]
+)
+
+PROMPT_PRESETS = {
+    "Full Coverage":
+        "Generate complete coverage including positive, negative, edge, boundary, security, and regression scenarios.",
+
+    "Happy Path Only":
+        "Generate only happy path scenarios.",
+
+    "Negative Testing":
+        "Focus on invalid inputs, error handling, and failure scenarios.",
+
+    "Boundary Testing":
+        "Focus on boundary value analysis and equivalence partitioning.",
+
+    "Security Testing":
+        "Include authentication, authorization, session management, and security scenarios.",
+
+    "Regression Suite":
+        "Generate only business critical regression scenarios.",
+
+    "BDD Gherkin":
+        "Generate output in Gherkin Feature/Scenario format."
+}
+
+selected_preset_prompt = PROMPT_PRESETS[preset]
 
 
 # Function to Extract JSON from AI Response
