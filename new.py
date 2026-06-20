@@ -1,5 +1,5 @@
 import streamlit as st
-from autogen import UserProxyAgent, AssistantAgent
+from openai import OpenAI
 
 # ==========================================
 # STREAMLIT CONFIG
@@ -140,7 +140,7 @@ user_instruction = st.text_area(
 config_list = [
 {
     "model": "gpt-4o-mini",
-    "api_key": st.secrets["OPENAI_API_KEY"]
+    "api_key": st.secrets["GEMINI_API_KEY"]
 }
 ]
 

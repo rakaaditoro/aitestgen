@@ -1,5 +1,2 @@
 streamlit
-pandas
-simplejson==3.18.1
-pyautogen==0.2.35
-openai
+google-generativeai
