@@ -1,7 +1,5 @@
-
 streamlit==1.15.0
 pandas
 simplejson==3.18.1
-autogen==0.1.0
+autogen-agentchat~=0.2
 altair==4
-autogen
