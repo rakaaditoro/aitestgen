@@ -138,11 +138,10 @@ user_instruction = st.text_area(
 # ==========================================
 
 config_list = [
-    {
-        "model": "llama3.2",
-        "api_type": "ollama",
-        "stream": False
-    }
+{
+    "model": "gpt-4o-mini",
+    "api_key": st.secrets["OPENAI_API_KEY"]
+}
 ]
 
 qa_agent = AssistantAgent(
